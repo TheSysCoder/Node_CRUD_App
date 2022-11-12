@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import mongoose from "mongoose";
 
+// import routes
+import userRoutes from './routes/User.routes.js'
 // import config
 dotenv.config({
     path: './config.env'
@@ -17,8 +19,8 @@ const PORT = process.env.PORT || 3001
 
 app.use(
     cors({
-        origin:"*",
-        methods: ['GET','POST','DELETE','PUT','PATCH']
+        origin: "*",
+        methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH']
     })
 )
 
@@ -27,15 +29,25 @@ app.use(express.json())
 
 // Listen app for request
 
-app.listen(PORT,(err)=>{
+app.listen(PORT, (err) => {
     if (err) {
         console.error("Oh no! There is something wrong");
-    }else{
+    } else {
         console.log("Awesome!!! Our express serve is started.");
     }
 })
 
 // connect to the database
 
-const dbURL = "mongodb://"+process.env.DB_CONNECTION_URL+":"+process.env.DB_PORT+"/"+process.env.DB_NAME
+const dbURL = "mongodb://" + process.env.DB_CONNECTION_URL + ":" + process.env.DB_PORT + "/" + process.env.DB_NAME
+mongoose.connect(dbURL, {
+    useNewUrlParser: true,
+}).then(() => {
+    console.log("Yup!! We are now connected to the database");
+}).catch((err) => {
+    console.error("Something is wrong could not connect to database.", err);
+    process.exit();
+})
 
+// call all routes
+app.use('/api/users', userRoutes)
